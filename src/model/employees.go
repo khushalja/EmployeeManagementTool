@@ -8,14 +8,16 @@ type Contact struct {
 	EmailId string `json:"emailid" bson:"emailid"`
 }
 type Employee struct {
-	Id             primitive.ObjectID `bson:"_id,omitempty"`
-	EmployeeId     int                `json:"employeeid"`
-	EmployeeName   string             `json:"employeename" bson:"employeename"`
-	Contact        Contact            `json:"contact" bson:"contact"`
-	JobTitle       string             `json:"jobtitle" bson:"jobtitle"`
-	Department     string             `json:"department" bson:"department"`
-	Salary         float64            `json:"salary" bson:"salary"`
-	EmployeeType   int                `json:"employeetype" bson:"employeetype"`
-	Token          string             `json:"token" bson:"token"`
-	RefreshedToken string             `json:"RefreshedToken" bson:"RefreshedToken"`
+	Id primitive.ObjectID `bson:"_id,omitempty"`
+	//min and max value works only with strintg or array lengths and not for numeric data types.
+	EmployeeId int64 `json:"employeeid" validate:"required"`
+	// we need to use custom validations for that.
+	EmployeeName   string  `json:"employeename" validate:"required,min=4,max=20"`
+	Contact        Contact `json:"contact" bson:"contact" validate:"required"`
+	JobTitle       string  `json:"jobtitle" bson:"jobtitle" validate:"required"`
+	Department     string  `json:"department" bson:"department" validate:"required"`
+	Salary         float64 `json:"salary" bson:"salary" validate:"required"`
+	EmployeeType   int     `json:"employeetype" bson:"employeetype" validate:"required"`
+	Token          string  `json:"token" bson:"token"`
+	RefreshedToken string  `json:"RefreshedToken" bson:"RefreshedToken"`
 }

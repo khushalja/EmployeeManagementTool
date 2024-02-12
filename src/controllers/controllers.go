@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -26,6 +27,15 @@ func SignupManager() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "failed to bind json to employee struct"})
 			return
 		}
+		err := validator.New().Struct(emp)
+
+		if err != nil {
+			for _, err := range err.(validator.ValidationErrors) {
+				println(err.Field(), err.Tag(), err.Param())
+			}
+			c.JSON(http.StatusBadRequest, gin.H{"error": "please provide valid inputs"})
+			return
+		}
 		fmt.Println(emp)
 		client, err := mongo.Connect(ctx, options.Client().ApplyURI(configs.EnvMongoURI()))
 
@@ -35,7 +45,12 @@ func SignupManager() gin.HandlerFunc {
 		}
 		fmt.Println(emp.EmployeeName)
 
-		token, refreshToken, _ := helper.GenerateAllTokens(emp.EmployeeName)
+		token, refreshToken, err := helper.GenerateAllTokens(emp.EmployeeName)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		fmt.Println(token, refreshToken)
 		emp.Token = token
@@ -50,6 +65,7 @@ func SignupManager() gin.HandlerFunc {
 			return
 		}
 		fmt.Println(result.InsertedID)
+		c.JSON(http.StatusOK, result)
 
 	}
 }

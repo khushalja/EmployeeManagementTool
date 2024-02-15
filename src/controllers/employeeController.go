@@ -70,6 +70,52 @@ func SignupManager() gin.HandlerFunc {
 	}
 }
 
+func LoginManager() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.TODO(), 30*time.Second)
+
+		defer cancel()
+		client, err := mongo.Connect(ctx, options.Client().ApplyURI(configs.EnvMongoURI()))
+		if err != nil {
+			log.Fatal(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
+		collection := client.Database(configs.EnvDatabase()).Collection(configs.EnvCollection())
+
+		var emp model.Employee
+		var existingEmp model.Employee
+
+		if err := c.ShouldBindJSON(&emp); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error() + "failed to bind json"})
+			return
+		}
+
+		err = collection.FindOne(ctx, bson.D{{Key: "employeeid", Value: emp.EmployeeId}}).Decode(&existingEmp)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error() + "failed to retieve employee"})
+			return
+		}
+
+		if emp.EmployeeId != existingEmp.EmployeeId || emp.Password != existingEmp.Password {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide correct EmployeeId or Password"})
+			return
+		}
+		token, refreshedtoken, err := helper.GenerateAllTokens(existingEmp.EmployeeName)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		existingEmp.Token = token
+		existingEmp.RefreshedToken = refreshedtoken
+
+		c.JSON(http.StatusOK, gin.H{"token": existingEmp.Token, "Employee Logged in successfully": existingEmp.EmployeeName})
+
+	}
+}
+
 func GetAllEmployees() gin.HandlerFunc {
 	return func(c *gin.Context) {
 

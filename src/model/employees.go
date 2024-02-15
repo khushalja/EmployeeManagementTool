@@ -19,5 +19,6 @@ type Employee struct {
 	Salary         float64 `json:"salary" bson:"salary" validate:"required"`
 	EmployeeType   int     `json:"employeetype" bson:"employeetype" validate:"required"`
 	Token          string  `json:"token" bson:"token"`
-	RefreshedToken string  `json:"RefreshedToken" bson:"RefreshedToken"`
+	RefreshedToken string  `json:"refreshedtoken" bson:"refreshedtoken"`
+	Password       string  `json:"password" validate:"required"`
 }

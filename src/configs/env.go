@@ -8,7 +8,7 @@ import (
 )
 
 func EnvMongoURI() string {
-	err := godotenv.Load()
+	err := godotenv.Load("config.env")
 
 	if err != nil {
 		log.Fatal("failed to load .env file")
@@ -16,14 +16,14 @@ func EnvMongoURI() string {
 	return os.Getenv("MONGOURI")
 }
 func EnvDatabase() string {
-	err := godotenv.Load()
+	err := godotenv.Load("config.env")
 	if err != nil {
 		log.Fatal("failed to load .env file")
 	}
 	return os.Getenv("DATABASE")
 }
 func EnvCollection() string {
-	err := godotenv.Load()
+	err := godotenv.Load("config.env")
 	if err != nil {
 		log.Fatal("failed to load .env file")
 	}

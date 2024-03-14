@@ -4,12 +4,14 @@ import (
 	"EmployeeManagementTool/src/controllers"
 	"EmployeeManagementTool/src/middleware"
 
+	helmet "github.com/danielkov/gin-helmet"
 	"github.com/gin-gonic/gin"
 )
 
 func GinConnection(r *gin.Engine) {
 	// router := gin.Default()
 	router := r.Group("/employee")
+	router.Use(helmet.Default())
 	router.Use(middleware.Authenticate())
 	{
 		router.GET("/employeedetails", controllers.GetAllEmployees())

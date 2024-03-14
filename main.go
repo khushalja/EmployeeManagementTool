@@ -9,16 +9,22 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/joho/godotenv"
+
 	"github.com/gin-gonic/gin"
 	// "go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
 	fmt.Println("Emp management tool")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
 	// restapi.GinConnection()
-	uri := "mongodb://localhost:27017"
+	// uri := "mongodb://localhost:27017"
 	// client, ctx, cancel, err := mongodb.ConnectDb(uri)
-	client, ctx, cancel, err := configs.ConnectDb(uri)
+	client, ctx, cancel, err := configs.ConnectDb(configs.EnvMongoURI())
 	if err != nil {
 		log.Fatal(err)
 	}

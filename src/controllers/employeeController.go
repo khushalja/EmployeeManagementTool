@@ -11,64 +11,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-func SignupManager() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.TODO(), 30*time.Second)
-		defer cancel()
-		var emp model.Employee
-
-		if err := c.BindJSON(&emp); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "failed to bind json to employee struct"})
-			return
-		}
-		err := validator.New().Struct(emp)
-
-		if err != nil {
-			for _, err := range err.(validator.ValidationErrors) {
-				println(err.Field(), err.Tag(), err.Param())
-			}
-			c.JSON(http.StatusBadRequest, gin.H{"error": "please provide valid inputs"})
-			return
-		}
-		fmt.Println(emp)
-		client, err := mongo.Connect(ctx, options.Client().ApplyURI(configs.EnvMongoURI()))
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		fmt.Println(emp.EmployeeName)
-
-		token, refreshToken, err := helper.GenerateAllTokens(emp.EmployeeName)
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		fmt.Println(token, refreshToken)
-		emp.Token = token
-		emp.RefreshedToken = refreshToken
-		// fmt.Println("the value of emp.token,refreshedtoken is", emp.Token, emp.RefreshedToken)
-		collection := client.Database(configs.EnvDatabase()).Collection(configs.EnvCollection())
-
-		result, err := collection.InsertOne(ctx, emp)
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		fmt.Println(result.InsertedID)
-		c.JSON(http.StatusOK, result)
-
-	}
-}
 
 func LoginManager() gin.HandlerFunc {
 	return func(c *gin.Context) {

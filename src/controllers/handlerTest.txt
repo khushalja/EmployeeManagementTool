@@ -1,0 +1,30 @@
+// import (
+// 	"EmployeeManagementTool/src/model"
+// 	"bytes"
+// 	"encoding/json"
+// 	"net/http"
+// 	"net/http/httptest"
+// 	"testing"
+
+// 	"github.com/gin-gonic/gin"
+// 	"github.com/stretchr/testify/assert"
+// )
+
+// func Getrouter() *gin.Engine {
+// 	router := gin.Default()
+// 	return router
+// }
+// func TestLoginManager(t *testing.T) {
+// 	r := Getrouter()
+// 	r.POST("/employee/login", LoginManager())
+// 	emp := &model.Employee{
+// 		EmployeeId: 1212121,
+// 		Password:   "letsRock",
+// 	}
+// 	empJson, _ := json.Marshal(emp)
+
+// 	req, _ := http.NewRequest("POST", "/employee/login", bytes.NewBuffer(empJson))
+// 	w := httptest.NewRecorder()
+// 	r.ServeHTTP(w, req)
+// 	assert.Equal(t, http.StatusOK, w.Code)
+// }
